@@ -1,23 +1,49 @@
 cc.chartboostx = {
 	ftable: {},
+	connectionId: 0,
 	subscribe: function (callerName, location, callback)
 	{
-		key = callerName+"_"+location;
-		this.ftable[key] =  this.ftable[key] || [] ;
-		this.ftable[key].push(callback);
+		this.connectionId++;
+		key = callerName + "_" + location;
+		connection = key + "-" + this.connectionId;
+		this.ftable[key] =  this.ftable[key] || {};
+		this.ftable[key][connection] = callback;
+		return connection;
+	},
+	unsubscribe: function (conn) 
+	{
+		cc.log(this.ftable);
+		keys = conn.split("-");
+		delete this.ftable[keys[0]][conn];
 	},
     dispatch: function (callerName, location)
     {
     	key = callerName+"_"+location;
-        cc.log( "====== cc.chartboostx -> dispatch( " + key + " )" );
         
-        if(this.ftable[key])
+        if(this.ftable.hasOwnProperty(key))
         {
-	        for (i = 0; i < this.ftable[key].length; i++) { 
-	 		  	fnc = this.ftable[key][i];
-	 		   	fnc();
+        	for (var connId in this.ftable[key])
+        	{
+ 				if (this.ftable[key].hasOwnProperty(connId))
+ 				{
+ 					cc.log(connId);
+ 					cc.log(this.ftable[key]);
+ 					cc.log(this.ftable[key][connId]);
+ 					fnc = this.ftable[key][connId];
+ 					fnc(connId);
+  				}
 			}
 		}
-        return;
+    },
+    trigger: function (callerName, location)
+    {
+	    if (cc.sys.OS_ANDROID)
+        {
+            jsb.reflection.callStaticMethod("com/wonderwombat/ChartboostX/ChartboostXBridge", callerName, "(Ljava/lang/String;)V", location);
+        }
+        else if (cc.sys.OS_IOS)
+        {
+            
+        }
     },
 }
