@@ -1,13 +1,13 @@
 cc.chartboostx = {
 	ftable: {},
 	connectionId: 0,
-	subscribe: function (callerName, location, callback)
+	subscribe: function (callerName, location, callback, sender)
 	{
 		this.connectionId++;
 		key = callerName + "_" + location;
 		connection = key + "-" + this.connectionId;
 		this.ftable[key] =  this.ftable[key] || {};
-		this.ftable[key][connection] = callback;
+		this.ftable[key][connection] = {"cb": callback, "obj": sender};
 		return connection;
 	},
 	unsubscribe: function (conn) 
@@ -29,17 +29,18 @@ cc.chartboostx = {
  					cc.log(connId);
  					cc.log(this.ftable[key]);
  					cc.log(this.ftable[key][connId]);
- 					fnc = this.ftable[key][connId];
- 					fnc(connId);
+ 					callback = this.ftable[key][connId]["cb"];
+ 					sender = this.ftable[key][connId]["obj"];
+ 					callback(connId, sender);
   				}
 			}
 		}
     },
     trigger: function (callerName, location)
     {
-    	if (cc.sys.isNative) 
-    	{	
-		    if (cc.sys.OS_ANDROID)
+	    if (cc.sys.isNative) 
+    	{
+    		if (cc.sys.OS_ANDROID)
 	        {
 	            jsb.reflection.callStaticMethod("com/wonderwombat/ChartboostX/ChartboostXBridge", callerName, "(Ljava/lang/String;)V", location);
 	        }
