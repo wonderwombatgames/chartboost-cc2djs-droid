@@ -37,13 +37,16 @@ cc.chartboostx = {
     },
     trigger: function (callerName, location)
     {
-	    if (cc.sys.OS_ANDROID)
-        {
-            jsb.reflection.callStaticMethod("com/wonderwombat/ChartboostX/ChartboostXBridge", callerName, "(Ljava/lang/String;)V", location);
-        }
-        else if (cc.sys.OS_IOS)
-        {
-            
-        }
+    	if (cc.sys.isNative) 
+    	{	
+		    if (cc.sys.OS_ANDROID)
+	        {
+	            jsb.reflection.callStaticMethod("com/wonderwombat/ChartboostX/ChartboostXBridge", callerName, "(Ljava/lang/String;)V", location);
+	        }
+	        else if (cc.sys.OS_IOS)
+	        {
+	            
+	        }
+	    }
     },
 }
