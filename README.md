@@ -1,4 +1,4 @@
-##chartboost-cc2dx-droid
+##chartboost-cc2djs-droid
 
 Bridge to use Chartboost Android on COCOS2D-X javascript
 
